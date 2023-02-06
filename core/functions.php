@@ -21,3 +21,24 @@ function get_post_id_by_slug($slug){
     }
 }
 
+/**
+ * Function to change the email address before sending
+ *
+ * @param [object] $contact_form
+ * @return void
+ */
+function wpcf7_change_recipient($contact_form){
+
+    $submission = WPCF7_Submission::get_instance();
+    $id_post    = get_post_id_by_slug($_POST['slug-page']);
+    $recipient  = rwmb_get_value( 'branch_email', '', $id_post  );
+
+	if($recipient) {
+        $mail = $contact_form->prop( 'mail' );
+        $mail['recipient'] = $recipient;
+        $contact_form->set_properties(array('mail'=>$mail));
+    }
+
+}
+add_action( 'wpcf7_before_send_mail', 'wpcf7_change_recipient' );
+
